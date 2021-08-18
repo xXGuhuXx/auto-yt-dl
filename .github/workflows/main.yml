@@ -1,37 +1,46 @@
-####################################################
-# I took this template from marcel-dempers. Thanks!#
-####################################################
+# This workflow uses actions that are not certified by GitHub.
+# They are provided by a third-party and are governed by
+# separate terms of service, privacy policy, and support
+# documentation.
 
-name: Docker Series Builds
+name: Create and publish a Docker image
 
-on: [push]
+on:
+  push:
+    branches: ['release']
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
 
 jobs:
-  build:
+  build-and-push-image:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
     steps:
-    - uses: actions/checkout@v2
-    - name: docker login
-      env:
-        DOCKER_USER: ${{ secrets.DOCKER_USER }}   
-        DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}  
-      run: |
-        docker login -u $DOCKER_USER -p $DOCKER_PASSWORD
-    - name: docker build csharp
-      run: |
-        docker build ./c# -t aimvector/csharp:1.0.0
-    - name: docker build nodejs
-      run: |
-        docker build ./nodejs -t aimvector/nodejs:1.0.0
-    - name: docker build python
-      run: |
-        docker build ./python -t aimvector/python:1.0.0
-    - name: docker build golang
-      run: |
-        docker build ./golang -t aimvector/golang:1.0.0
-    - name: docker push
-      run: |
-        docker push aimvector/csharp:1.0.0
-        docker push aimvector/nodejs:1.0.0
-        docker push aimvector/golang:1.0.0
-        docker push aimvector/python:1.0.0
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Log in to the Container registry
+        uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@98669ae865ea3cffbcbaa878cf57c20bbf1c6c38
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
