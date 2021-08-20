@@ -6,7 +6,7 @@ from pytube import YouTube
 
 def downloadNewVideo(videoURL):
     video = YouTube(videoURL)
-    print("Downloading new Video: " + video.title)
+    print("Downloading new Video: " + str(video.title))
     video.streams.get_highest_resolution().download(output_path="Downloads")
 
 
