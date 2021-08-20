@@ -280,6 +280,23 @@ def uniqueify(duped_list: List) -> List:
     return result
 
 
+def generate_all_html_json_mocks():
+    """Regenerate the video mock json files for all current test videos.
+
+    This should automatically output to the test/mocks directory.
+    """
+    test_vid_ids = [
+        '2lAe1cqCOXo',
+        '5YceQ8YqYMc',
+        'irauhITDrsE',
+        'm8uHb5jIGN8',
+        'QRS8MkLhQmM',
+        'WXxV9g7lsFE'
+    ]
+    for vid_id in test_vid_ids:
+        create_mock_html_json(vid_id)
+
+
 def create_mock_html_json(vid_id) -> Dict[str, Any]:
     """Generate a json.gz file with sample html responses.
 
@@ -308,9 +325,10 @@ def create_mock_html_json(vid_id) -> Dict[str, Any]:
         'js': yt.js,
         'embed_html': yt.embed_html,
         'watch_html': yt.watch_html,
-        'vid_info_raw': yt.vid_info_raw
+        'vid_info': yt.vid_info
     }
 
+    logger.info(f'Outputing json.gz file to {gzip_filepath}')
     with gzip.open(gzip_filepath, 'wb') as f:
         f.write(json.dumps(html_data).encode('utf-8'))
 
