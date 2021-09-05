@@ -1,6 +1,7 @@
 # syntax=docker/dockerfile:1
 
 FROM python:3.8-slim-buster
+LABEL org.opencontainers.image.source="https://github.com/xXGuhuXx/yt-channel-dl"
 WORKDIR /app
 VOLUME /Downloads
 COPY requirements.txt requirements.txt
