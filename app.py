@@ -15,7 +15,7 @@ def index():
         channelURLs.append(str(monitoredChannels[n].channel_url))
 
     zipped = zip(channelNames, channelURLs)
-    return render_template("index.html", channels=zipped)
+    return render_template("templates/index.html", channels=zipped)
 
 
 @app.route('/', methods=["POST"])
@@ -36,7 +36,7 @@ def addChannel():
                     channelURLs.append(str(monitoredChannels[m].channel_url))
 
                 zipped = zip(channelNames, channelURLs)
-                return render_template("index.html", channels=zipped)
+                return render_template("templates/index.html", channels=zipped)
 
         if request.form["inputSubmit"]:
             print("i")
@@ -55,7 +55,7 @@ def addChannel():
         channelURLs.append(str(monitoredChannels[n].channel_url))
 
     zipped = zip(channelNames, channelURLs)
-    return render_template("index.html", channels=zipped)
+    return render_template("templates/index.html", channels=zipped)
 
 
 if __name__=='__main__':
