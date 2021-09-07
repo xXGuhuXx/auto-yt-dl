@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1
 
 FROM python:3.8-slim-buster
-LABEL org.opencontainers.image.source="https://github.com/xXGuhuXx/yt-channel-dl"
+LABEL org.opencontainers.image.source="https://github.com/xXGuhuXx/auto-yt-dl"
 ENV UMASK=000
 ENV UID=99
 ENV GID=100
