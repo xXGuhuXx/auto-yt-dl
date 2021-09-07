@@ -1,6 +1,6 @@
 ﻿# Welcome to auto-yt-dl!
 
-This docker is specifically used to automatically download new Videos of specific YouTube Channels. It features
+This docker is used to automatically download new Videos of specific YouTube Channels. It features
 a Web Gui to add and remove Channels from your watch list. It was tested and build to run on unRaid.
 
 NOTE: This docker will not download all videos of a Channel only newly added videos.
