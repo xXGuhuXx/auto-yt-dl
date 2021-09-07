@@ -3,7 +3,7 @@
 FROM python:3.8-slim-buster
 LABEL org.opencontainers.image.source="https://github.com/xXGuhuXx/yt-channel-dl"
 WORKDIR /app
-VOLUME /Downloads
+VOLUME /app/Downloads
 COPY requirements.txt requirements.txt
 RUN pip3 install -r requirements.txt
 EXPOSE 5000
