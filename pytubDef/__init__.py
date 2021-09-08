@@ -11,7 +11,7 @@ def downloadNewVideo(videoURL):
 
 
 def urlAlreadyWritten(url: string, channelName: string):
-    urlFile = open(channelName + ".txt", "rt")
+    urlFile = open("data/" + channelName + ".txt", "rt")
     endOfFileNotReached = True
     returnBool = False
     while endOfFileNotReached:
@@ -32,36 +32,38 @@ def urlAlreadyWritten(url: string, channelName: string):
 
 def writeURLsToTxt(selectedChannel: Channel):
     try:
-        urlFile = open(selectedChannel.channel_name + ".txt", "rt")
+        urlFile = open("data/" + selectedChannel.channel_name + ".txt", "rt")
         print(selectedChannel.channel_name + "´s URL-File already exist")
     except:
-        urlFile = open(selectedChannel.channel_name + ".txt", "x")
+        urlFile = open("data/" + selectedChannel.channel_name + ".txt", "x")
         urlFile.mode = "rt"
         print(selectedChannel.channel_name + "´s URL-File does not exist, created File")
 
     urlFile.close()
+
+    print("Writing URL(s) to " + selectedChannel.channel_name)
+
     for n in range(selectedChannel.video_urls.__len__()):
 
         if not urlAlreadyWritten(selectedChannel.video_urls[n], selectedChannel.channel_name):
-            urlFile = open(selectedChannel.channel_name + ".txt", "a")
+            urlFile = open("data/" + selectedChannel.channel_name + ".txt", "a")
             urlFile.writelines(" \n" + str(selectedChannel.video_urls[n]))
             urlFile.close()
-            print("Writing URL to " + selectedChannel.channel_name)
 
 
 def writeURLtoFile(selectedChannel: Channel, url: string):
     try:
-        urlFile = open(selectedChannel.channel_name + ".txt", "rt")
+        urlFile = open("data/" + selectedChannel.channel_name + ".txt", "rt")
         print(selectedChannel.channel_name + "´s URL-File already exist")
     except:
-        urlFile = open(selectedChannel.channel_name + ".txt", "x")
+        urlFile = open("data/" + selectedChannel.channel_name + ".txt", "x")
         urlFile.mode = "rt"
         print(selectedChannel.channel_name + "´s URL-File does not exist, created File")
 
     urlFile.close()
 
     if not urlAlreadyWritten(url, selectedChannel.channel_name):
-        urlFile = open(selectedChannel.channel_name + ".txt", "a")
+        urlFile = open("data/" + selectedChannel.channel_name + ".txt", "a")
         urlFile.writelines(" \n" + url)
         urlFile.close()
         print("Writing URL to " + selectedChannel.channel_name)
@@ -90,8 +92,14 @@ def checkForNewURL(selectedChannel: Channel):
 
 
 def returnMonitoredChannels():
-    monitoredChannelsFile = open("monitoredChannels.txt", "rt")
+    try:
+        monitoredChannelsFile = open("data/monitoredChannels.txt", "rt")
+    except:
+        monitoredChannelsFile = open("data/monitoredChannels.txt", "x")
+        monitoredChannelsFile.mode = "rt"
+
     channelURLs = monitoredChannelsFile.readlines()
+
     monitoredChannelsFile.close()
     monitoredChannelsArray = [Channel]
 
@@ -121,7 +129,7 @@ def newMonitoredChannel(newChannelURL: string):
                 break
 
         if not alreadyWritten:
-            monitoredChannelsFile = open("monitoredChannels.txt", "a")
+            monitoredChannelsFile = open("data/monitoredChannels.txt", "a")
             monitoredChannelsFile.write(" \n" + newChannelURL)
             monitoredChannelsFile.close()
             writeURLsToTxt(c)
@@ -131,7 +139,7 @@ def newMonitoredChannel(newChannelURL: string):
 
 
 def removeMonitoredChannel(oldChannelURL: string):
-    monitoredChannelsFile = open("monitoredChannels.txt", "rt")
+    monitoredChannelsFile = open("data/monitoredChannels.txt", "rt")
     channelURLs = monitoredChannelsFile.readlines()
     monitoredChannelsFile.close()
 
@@ -140,6 +148,6 @@ def removeMonitoredChannel(oldChannelURL: string):
             del channelURLs[n]
             break
 
-    monitoredChannelsFile = open("monitoredChannels.txt", "w")
+    monitoredChannelsFile = open("data/monitoredChannels.txt", "w")
     for n in range(channelURLs.__len__()):
         monitoredChannelsFile.write(channelURLs[n])
