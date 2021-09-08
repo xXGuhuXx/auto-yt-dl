@@ -92,8 +92,14 @@ def checkForNewURL(selectedChannel: Channel):
 
 
 def returnMonitoredChannels():
-    monitoredChannelsFile = open("data/monitoredChannels.txt", "rt")
+    try:
+        monitoredChannelsFile = open("data/monitoredChannels.txt", "rt")
+    except:
+        monitoredChannelsFile = open("data/monitoredChannels.txt", "x")
+        monitoredChannelsFile.mode = "rt"
+
     channelURLs = monitoredChannelsFile.readlines()
+
     monitoredChannelsFile.close()
     monitoredChannelsArray = [Channel]
 
