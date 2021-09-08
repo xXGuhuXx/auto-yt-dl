@@ -8,6 +8,7 @@ ENV GID=100
 ENV DATA_PERM=770
 WORKDIR /app
 VOLUME /app/Downloads
+VOLUME /app/data
 COPY requirements.txt requirements.txt
 RUN pip3 install -r requirements.txt
 EXPOSE 5000
