@@ -7,7 +7,10 @@ from pytube import YouTube
 def downloadNewVideo(videoURL):
     video = YouTube(videoURL)
     print("Downloading new Video: " + str(video.title))
-    video.streams.get_highest_resolution().download(output_path="Downloads")
+    try:
+        video.streams.get_highest_resolution().download(output_path="Downloads")
+    except:
+        print("Failed to download video: " + str(video.title) + ". Is it a livestream?" )
 
 
 def urlAlreadyWritten(url: string, channelName: string):
