@@ -4,11 +4,12 @@ from pytube import Channel
 from pytube import YouTube
 
 
-def downloadNewVideo(videoURL):
+def downloadNewVideo(channel: string,videoURL):
     video = YouTube(videoURL)
     print("Downloading new Video: " + str(video.title))
     try:
         video.streams.get_highest_resolution().download(output_path="Downloads")
+        writeURLtoFile(channel, videoURL)
     except:
         print("Failed to download video: " + str(video.title) + ". Is it a livestream?" )
 
@@ -88,10 +89,7 @@ def checkForNewURL(selectedChannel: Channel):
         if not urlAlreadyWritten(selectedChannel.video_urls[n], selectedChannel.channel_name):
              print("Found and downloading a new URL from " + selectedChannel.channel_name)
              foundNewVid = foundNewVid + 1
-             downloadNewVideo(selectedChannel.video_urls[n])
-             writeURLtoFile(selectedChannel, selectedChannel.video_urls[n])
-
-    print("Found " + str(foundNewVid) + " new Videos from " + str(selectedChannel.channel_name))
+             downloadNewVideo(str(selectedChannel.channel_name),selectedChannel.video_urls[n])
 
 
 def returnMonitoredChannels():
