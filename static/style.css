@@ -91,3 +91,19 @@ h1 {
 	left: 5%;
 	top: 50px;
 }
+
+#settings {
+	background-color:#9EA5AD;
+	border-radius:28px;
+	border:1px solid;
+	display:inline-block;
+	width:80%;
+	color:#000000;
+	font-family:Arial;
+	font-size:17px;
+	padding:8px 31px;
+	text-decoration:none;
+	position: relative;
+	left: 5%;
+	top: 50px;
+}

@@ -2,13 +2,36 @@ import string
 import pytubDef
 from pytube import Channel
 from pytube import YouTube
+from configparser import ConfigParser
 
+def returnInterval():
+    try:
+        file =  "data/config.ini"
+        config = ConfigParser()
+        config.read(file)
+    except:
+        print("Config not found")
 
-def downloadNewVideo(channel: string,videoURL):
+    return config["settings"]["interval"]
+
+def returnChannelDir():
+    try:
+        file =  "data/config.ini"
+        config = ConfigParser()
+        config.read(file)
+    except:
+        print("Config not found")
+
+    return config.getboolean["settings"]["channelDir"]
+
+def downloadNewVideo(channel: Channel,videoURL):
     video = YouTube(videoURL)
     print("Downloading new Video: " + str(video.title))
     try:
-        video.streams.get_highest_resolution().download(output_path="Downloads")
+        if returnChannelDir()==false:
+            video.streams.get_highest_resolution().download(output_path="Downloads")
+        else:
+            video.streams.get_highest_resolution().download(output_path=("Downloads/" + str(channel.channel_name))
         writeURLtoFile(channel, videoURL)
     except:
         print("Failed to download video: " + str(video.title) + ". Is it a livestream?" )
@@ -89,7 +112,7 @@ def checkForNewURL(selectedChannel: Channel):
         if not urlAlreadyWritten(selectedChannel.video_urls[n], selectedChannel.channel_name):
              print("Found and downloading a new URL from " + selectedChannel.channel_name)
              foundNewVid = foundNewVid + 1
-             downloadNewVideo(str(selectedChannel.channel_name),selectedChannel.video_urls[n])
+             downloadNewVideo(selectedChannel,selectedChannel.video_urls[n])
 
 
 def returnMonitoredChannels():
