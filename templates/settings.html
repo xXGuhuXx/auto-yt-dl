@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>YT Channel Downloader</title>
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+        <h1 align="center">YT Channel Downloader</h1>
+    </head>
+    <body>
+        <form class="channelInput" method="POST">
+            <input id="inputField" name="Interval" type="number" placeholder="Set time to wait until the channels are checked for new videos DEFAULT: 900 CURRENTLY: {{ interval }}">
+            <input id="inputSubmit" name="IntervalSubmit" type="submit" value="Submit">
+        </form>
+        <div>
+            <form class="channelInput" method="POST">
+                {% if channelDir %}
+                <button id="submitChannelDirDisable" type="submit" name="toggleChannelDir" value="toggleChannelDir">Disable downloads in a seperate directory for each Channel</button>
+                {% else %}
+                <button id="submitChannelDirEnable" type="submit" name="toggleChannelDir" value="toggleChannelDir">Enable downloads in a seperate directory for each Channel</button>
+                {% endif %}
+            </form>
+        </div>
+        <br><br><br>
+         <div>
+            <a href="index.html" class="settings">Return to home</a>
+        </div>
+    </body>
+</html>

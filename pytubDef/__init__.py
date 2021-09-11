@@ -2,13 +2,73 @@ import string
 import pytubDef
 from pytube import Channel
 from pytube import YouTube
+from configparser import ConfigParser
+
+def returnInterval():
+    try:
+        file =  "data/config.ini"
+        config = ConfigParser()
+        config.read(file)
+        return config["Settings"]["interval"]
+    except:
+        createConfig()
+        return returnInterval()
 
 
-def downloadNewVideo(videoURL):
+def returnChannelDir():
+    try:
+        file =  "data/config.ini"
+        config = ConfigParser()
+        config.read(file)
+        return config.getboolean("Settings", "channelDir")
+    except:
+        createConfig()
+        return returnChannelDir()
+
+def updateInterval(interval: int):
+    if interval>59:
+        try:
+            file =  "data/config.ini"
+            config = ConfigParser()
+            config.read(file)
+            config.set("Settings","interval",str(interval))
+            with open(file, 'w') as configfile:
+                config.write(configfile)
+        except:
+            createConfig()
+            updateInterval(interval)
+    else:
+        print("Interval must atleast be 60")
+
+def toggleChannelDir():
+    try:
+        file = "data/config.ini"
+        config = ConfigParser()
+        config.read(file)
+        if returnChannelDir():
+            config.set("Settings", "channelDir", "False")
+        else:
+            config.set("Settings", "channelDir", "True")
+        with open(file, 'w') as configfile:
+            config.write(configfile)
+    except:
+        createConfig()
+        toggleChannelDir()
+
+def createConfig():
+    config_object = ConfigParser()
+    config_object["Settings"] = {
+        "interval": "900",
+        "channelDir": "True"
+    }
+    with open('data/config.ini', 'w') as conf:
+        config_object.write(conf)
+
+def downloadNewVideo(videoURL,path):
     video = YouTube(videoURL)
     print("Downloading new Video: " + str(video.title))
     try:
-        video.streams.get_highest_resolution().download(output_path="Downloads")
+        video.streams.get_highest_resolution().download(output_path=path)
     except:
         print("Failed to download video: " + str(video.title) + ". Is it a livestream?" )
 
@@ -88,10 +148,12 @@ def checkForNewURL(selectedChannel: Channel):
         if not urlAlreadyWritten(selectedChannel.video_urls[n], selectedChannel.channel_name):
              print("Found and downloading a new URL from " + selectedChannel.channel_name)
              foundNewVid = foundNewVid + 1
-             downloadNewVideo(selectedChannel.video_urls[n])
+             if returnChannelDir():
+                 path="Downloads/" + str(selectedChannel.channel_name)
+             else:
+                 path="Downloads"
+             downloadNewVideo(selectedChannel.video_urls[n],path)
              writeURLtoFile(selectedChannel, selectedChannel.video_urls[n])
-
-    print("Found " + str(foundNewVid) + " new Videos from " + str(selectedChannel.channel_name))
 
 
 def returnMonitoredChannels():
