@@ -9,7 +9,7 @@
     <body>
         <form class="channelInput" method="POST">
             <input id="inputField" name="inputField" type="url" placeholder="Input the URL of a YT-Channel here, ex.: https://www.youtube.com/user/Gronkh">
-            <input id="inputSubmit" name="inputSubmit"type="submit" value="Add">
+            <input id="inputSubmit" name="inputSubmit" type="submit" value="Add">
         </form>
         <br><br><br>
     {% for channel, channelURL in channels %}
@@ -21,7 +21,7 @@
         </div>
     {% endfor %}
         <div>
-            <a id="settings" href="settings.html">Settings</a>
+            <a class="settings" href="settings.html">Settings</a>
         </div>
     </body>
 </html>

@@ -7,14 +7,20 @@
         <h1 align="center">YT Channel Downloader</h1>
     </head>
     <body>
+        <form class="channelInput" method="POST">
+            <input id="inputField" name="Interval" type="number" placeholder="Set time to wait until the channels are checked for new videos DEFAULT: 900 CURRENTLY: {{ interval }}">
+            <input id="inputSubmit" name="IntervalSubmit" type="submit" value="Submit">
+        </form>
         <div>
-            <input type="checkbox" id="channelDirectory" name="channelDirectory" value="x">
-            <label for="channelDirectory">Save Videos in a directory named after the Channel</label>
+            <form class="channelInput" method="POST">
+                {% if channelDir %}
+                <button id="submitChannelDirEnable" type="submit" name="toggleChannelDir" value="toggleChannelDir">Enable downloads in a seperate directory for each Channel</button>
+                {% else %}
+                <button id="submitChannelDirDisable" type="submit" name="toggleChannelDir" value="toggleChannelDir">Disable downloads in a seperate directory for each Channel</button>
+                {% endif %}
+            </form>
         </div>
         <br><br><br>
-         <div>
-            <button type="submit">Subscribe</button>
-        </div>
          <div>
             <a href="index.html" class="settings">Return to home</a>
         </div>
