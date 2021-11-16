@@ -11,12 +11,25 @@
             <input id="inputField" name="inputField" type="url" placeholder="Input the URL of a YT-Channel here, ex.: https://www.youtube.com/user/Gronkh">
             <input id="inputSubmit" name="inputSubmit" type="submit" value="Add">
         </form>
+        <form class="playlistInput" method="POST">
+            <input id="playlistInputinputField" name="playlistInputField" type="url" placeholder="Input the URL of a YT-Playlist here, ex.: https://www.youtube.com/playlist?list=PL5JK9SjdCJp_MoWGAWdBmJPj9CmFvBMJJ">
+            <input id="playlistInputinputSubmit" name="playlistInputSubmit" type="submit" value="Add">
+        </form>
         <br><br><br>
     {% for channel, channelURL in channels %}
         <div class="channel">
             <form class="remove" method="POST">
                 <div class="channelName">{{ channel }} <span>URL: {{ channelURL }}</span></div>
                 <input type="submit" class="channelRemove" name="{{ channel }}" value="Remove">
+            </form>
+        </div>
+    {% endfor %}
+
+    {% for playlist, playlistURL in playlist %}
+        <div class="channel">
+            <form class="remove" method="POST">
+                <div class="channelName">{{ playlist }} <span>URL: {{ playlistURL }}</span></div>
+                <input type="submit" class="channelRemove" name="{{ playlist }}" value="Remove">
             </form>
         </div>
     {% endfor %}

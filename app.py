@@ -7,15 +7,24 @@ app = Flask(__name__)
 @app.route('/')
 def index():
     channelNames = []
+    playlistTitles = []
     channelURLs = []
+    playlistURLs = []
     monitoredChannels = pytubDef.returnMonitoredChannels()
+    monitoredPlaylist = pytubDef.returnMonitoredPlaylist()
 
     for n in range(monitoredChannels.__len__()):
         channelNames.append(str(monitoredChannels[n].channel_name))
         channelURLs.append(str(monitoredChannels[n].channel_url))
 
+    for n in range(monitoredPlaylist.__len__()):
+        playlistTitles.append(str(monitoredPlaylist[n].title))
+        playlistURLs.append(str(monitoredPlaylist[n].playlist_url))
+
+
     zipped = zip(channelNames, channelURLs)
-    return render_template("index.html", channels=zipped)
+    zipped1 = zip(playlistTitles, playlistURLs)
+    return render_template("index.html", channels=zipped, playList=zipped1)
 
 @app.route('/settings.html')
 def settings():
@@ -28,6 +37,7 @@ def back():
 @app.route('/', methods=["POST"])
 def addChannel():
     monitoredChannels = pytubDef.returnMonitoredChannels()
+    monitoredPlaylist = pytubDef.returnMonitoredPlaylist()
 
     if request.method == "POST":
 
@@ -42,8 +52,38 @@ def addChannel():
                     channelNames.append(str(monitoredChannels[m].channel_name))
                     channelURLs.append(str(monitoredChannels[m].channel_url))
 
+                playlistTitles = []
+                playlistURLs = []
+
+                for m in range(monitoredPlaylist.__len__()):
+                    playlistTitles.append(str(monitoredPlaylist[n].title))
+                    playlistURLs.append(str(monitoredPlaylist[n].playlist_url))
+
                 zipped = zip(channelNames, channelURLs)
-                return render_template("index.html", channels=zipped)
+                zipped1 = zip(playlistTitles, playlistURLs)
+                return render_template("index.html", channels=zipped, playlist=zipped1)
+
+        for n in range(monitoredPlaylist.__len__()):
+            if request.form == ImmutableMultiDict([(str(monitoredPlaylist[n].title), 'Remove')]):
+                pytubDef.removeMonitoredChannel(str(monitoredPlaylist[n].playlist_url))
+                channelNames = []
+                channelURLs = []
+                monitoredPlaylist = pytubDef.returnMonitoredPlaylist()
+
+                for m in range(monitoredChannels.__len__()):
+                    channelNames.append(str(monitoredChannels[m].channel_name))
+                    channelURLs.append(str(monitoredChannels[m].channel_url))
+
+                playlistTitles = []
+                playlistURLs = []
+
+                for m in range(monitoredPlaylist.__len__()):
+                    playlistTitles.append(str(monitoredPlaylist[n].title))
+                    playlistURLs.append(str(monitoredPlaylist[n].playlist_url))
+
+                zipped = zip(channelNames, channelURLs)
+                zipped1 = zip(playlistTitles, playlistURLs)
+                return render_template("index.html", channels=zipped, playlist=zipped1)
 
         if request.form["inputSubmit"]:
             newURL = request.form['inputField']
@@ -52,15 +92,30 @@ def addChannel():
             else:
                 print("URL Invalid")
 
+        if request.form["playlistInputSubmit"]:
+            newURL = request.form['playlistInputField']
+            if pytubDef.newMonitoredPlaylist(newURL):
+                print("Success")
+            else:
+                print("URL Invalid")
+
     channelNames = []
     channelURLs = []
+    playlistTitles = []
+    playlistURLs = []
     monitoredChannels = pytubDef.returnMonitoredChannels()
+    monitoredPlaylist = pytubDef.returnMonitoredPlaylist()
 
     for n in range(monitoredChannels.__len__()):
         channelNames.append(str(monitoredChannels[n].channel_name))
         channelURLs.append(str(monitoredChannels[n].channel_url))
 
+    for n in range(monitoredPlaylist.__len__()):
+        playlistTitles.append(str(monitoredPlaylist[n].title))
+        playlistURLs.append(str(monitoredPlaylist[n].playlist_url))
+
     zipped = zip(channelNames, channelURLs)
+    zipped1 = zip(playlistTitles, playlistURLs)
     return render_template("index.html", channels=zipped)
 
 @app.route('/settings.html', methods=["POST"])

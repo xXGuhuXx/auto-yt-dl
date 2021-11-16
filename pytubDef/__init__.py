@@ -2,6 +2,7 @@ import string
 import pytubDef
 from pytube import Channel
 from pytube import YouTube
+from pytube import Playlist
 from configparser import ConfigParser
 
 def returnInterval():
@@ -13,7 +14,6 @@ def returnInterval():
     except:
         createConfig()
         return returnInterval()
-
 
 def returnChannelDir():
     try:
@@ -38,7 +38,7 @@ def updateInterval(interval: int):
             createConfig()
             updateInterval(interval)
     else:
-        print("Interval must atleast be 60")
+        print("Interval must be atleast 60")
 
 def toggleChannelDir():
     try:
@@ -72,7 +72,6 @@ def downloadNewVideo(videoURL,path):
     except:
         print("Failed to download video: " + str(video.title) + ". Is it a livestream?" )
 
-
 def urlAlreadyWritten(url: string, channelName: string):
     urlFile = open("data/" + channelName + ".txt", "rt")
     endOfFileNotReached = True
@@ -92,8 +91,7 @@ def urlAlreadyWritten(url: string, channelName: string):
 
     return returnBool
 
-
-def writeURLsToTxt(selectedChannel: Channel):
+def writeChannelURLsToTxt(selectedChannel: Channel):
     try:
         urlFile = open("data/" + selectedChannel.channel_name + ".txt", "rt")
         print(selectedChannel.channel_name + "´s URL-File already exist")
@@ -113,8 +111,27 @@ def writeURLsToTxt(selectedChannel: Channel):
             urlFile.writelines(" \n" + str(selectedChannel.video_urls[n]))
             urlFile.close()
 
+def writePlaylistURLsToTxt(selectedPlaylist: Playlist):
+    try:
+        urlFile = open("data/" + selectedPlaylist.title + ".txt", "rt")
+        print(selectedPlaylist.title + "´s URL-File already exist")
+    except:
+        urlFile = open("data/" + selectedPlaylist.title + ".txt", "x")
+        urlFile.mode = "rt"
+        print(selectedPlaylist.title + "´s URL-File does not exist, created File")
 
-def writeURLtoFile(selectedChannel: Channel, url: string):
+    urlFile.close()
+
+    print("Writing URL(s) to " + selectedPlaylist.title)
+
+    for n in range(selectedPlaylist.video_urls.__len__()):
+
+        if not urlAlreadyWritten(selectedPlaylist.video_urls[n], selectedPlaylist.title):
+            urlFile = open("data/" + selectedPlaylist.title + ".txt", "a")
+            urlFile.writelines(" \n" + str(selectedPlaylist.video_urls[n]))
+            urlFile.close()
+
+def writeChannelURLtoFile(selectedChannel: Channel, url: string):
     try:
         urlFile = open("data/" + selectedChannel.channel_name + ".txt", "rt")
         print(selectedChannel.channel_name + "´s URL-File already exist")
@@ -133,15 +150,36 @@ def writeURLtoFile(selectedChannel: Channel, url: string):
     else:
         print("URL is already written")
 
+def writePlaylistURLtoFile(selectedPlaylist: Playlist, url: string):
+    try:
+        urlFile = open("data/" + selectedPlaylist.title + ".txt", "rt")
+        print(selectedPlaylist.title + "´s URL-File already exist")
+    except:
+        urlFile = open("data/" + selectedPlaylist.title + ".txt", "x")
+        urlFile.mode = "rt"
+        print(selectedPlaylist.title + "´s URL-File does not exist, created File")
+
+    urlFile.close()
+
+    if not urlAlreadyWritten(url, selectedPlaylist.title):
+        urlFile = open("data/" + selectedPlaylist.title + ".txt", "a")
+        urlFile.writelines(" \n" + url)
+        urlFile.close()
+        print("Writing URL to " + selectedPlaylist.title)
+    else:
+        print("URL is already written")
 
 def loop():
     channelArray = returnMonitoredChannels()
+    playlistArray = returnMonitoredPlaylist()
 
     for m in range(channelArray.__len__()):
-        checkForNewURL(channelArray[m])
+        checkForNewURLFromChannel(channelArray[m])
 
+    for m in range(playlistArray.__len__()):
+        checkForNewURLFromPlaylist(playlistArray[m])
 
-def checkForNewURL(selectedChannel: Channel):
+def checkForNewURLFromChannel(selectedChannel: Channel):
     foundNewVid = 0
 
     for n in range(selectedChannel.video_urls.__len__()):
@@ -153,8 +191,21 @@ def checkForNewURL(selectedChannel: Channel):
              else:
                  path="Downloads"
              downloadNewVideo(selectedChannel.video_urls[n],path)
-             writeURLtoFile(selectedChannel, selectedChannel.video_urls[n])
+             writeChannelURLtoFile(selectedChannel, selectedChannel.video_urls[n])
 
+def checkForNewURLFromPlaylist(selectedPlaylist: Playlist):
+    foundNewVid = 0
+
+    for n in range(selectedPlaylist.video_urls.__len__()):
+        if not urlAlreadyWritten(selectedPlaylist.video_urls[n], selectedPlaylist.title):
+             print("Found and downloading a new URL from " + selectedPlaylist.title)
+             foundNewVid = foundNewVid + 1
+             if returnChannelDir():
+                 path="Downloads/" + str(selectedPlaylist.title)
+             else:
+                 path="Downloads"
+             downloadNewVideo(selectedPlaylist.video_urls[n],path)
+             writePlaylistURLtoFile(selectedPlaylist, selectedPlaylist.video_urls[n])
 
 def returnMonitoredChannels():
     try:
@@ -176,6 +227,25 @@ def returnMonitoredChannels():
     monitoredChannelsArray.pop(0)
     return monitoredChannelsArray
 
+def returnMonitoredPlaylist():
+    try:
+        monitoredPlaylistFile = open("data/monitoredPlaylist.txt", "rt")
+    except:
+        monitoredPlaylistFile = open("data/monitoredPlaylist.txt", "x")
+        monitoredPlaylistFile.mode = "rt"
+
+    playlistURLs = monitoredPlaylistFile.readlines()
+
+    monitoredPlaylistFile.close()
+    monitoredPlaylistArray = [Playlist]
+
+    for n in range(playlistURLs.__len__()):
+
+        if  playlistURLs[n].__contains__("https://"):
+            monitoredPlaylistArray.append(Channel(playlistURLs[n]))
+
+    monitoredPlaylistArray.pop(0)
+    return monitoredPlaylistArray
 
 def newMonitoredChannel(newChannelURL: string):
     alreadyWritten = False
@@ -197,11 +267,35 @@ def newMonitoredChannel(newChannelURL: string):
             monitoredChannelsFile = open("data/monitoredChannels.txt", "a")
             monitoredChannelsFile.write(" \n" + newChannelURL)
             monitoredChannelsFile.close()
-            writeURLsToTxt(c)
+            writeChannelURLsToTxt(c)
             return True
         else:
             return False
 
+def newMonitoredPlaylist(newPlaylistURL: string):
+    alreadyWritten = False
+    try:
+        p = Channel(newPlaylistURL)
+    except:
+        print("URL is not Valid")
+        return False
+    else:
+        pArray = returnMonitoredPlaylist()
+
+        for n in range(pArray.__len__()):
+            if pArray[n].playlist_url.__contains__(p.playlist_url):
+                alreadyWritten = True
+                print("Channel already added")
+                break
+
+        if not alreadyWritten:
+            monitoredPlaylistFile = open("data/monitoredPlaylist.txt", "a")
+            monitoredPlaylistFile.write(" \n" + newPlaylistURL)
+            monitoredPlaylistFile.close()
+            writePlaylistURLsToTxt(p)
+            return True
+        else:
+            return False
 
 def removeMonitoredChannel(oldChannelURL: string):
     monitoredChannelsFile = open("data/monitoredChannels.txt", "rt")
@@ -216,3 +310,17 @@ def removeMonitoredChannel(oldChannelURL: string):
     monitoredChannelsFile = open("data/monitoredChannels.txt", "w")
     for n in range(channelURLs.__len__()):
         monitoredChannelsFile.write(channelURLs[n])
+
+def removePlaylist(oldPlaylistURL: string):
+    monitoredPlaylistFile = open("data/monitoredPlaylist.txt", "rt")
+    playlistURLs = monitoredPlaylistFile.readlines()
+    monitoredPlaylistFile.close()
+
+    for n in range(playlistURLs.__len__()):
+        if playlistURLs[n].__contains__(playlistURLs):
+            del playlistURLs[n]
+            break
+
+    monitoredPlaylistFile = open("data/monitoredPlaylist.txt", "w")
+    for n in range(playlistURLs.__len__()):
+        monitoredPlaylistFile.write(playlistURLs[n])
