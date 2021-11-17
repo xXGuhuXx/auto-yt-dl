@@ -275,7 +275,7 @@ def newMonitoredChannel(newChannelURL: string):
 def newMonitoredPlaylist(newPlaylistURL: string):
     alreadyWritten = False
     try:
-        p = Channel(newPlaylistURL)
+        p = Playlist(newPlaylistURL)
     except:
         print("URL is not Valid")
         return False
@@ -285,7 +285,7 @@ def newMonitoredPlaylist(newPlaylistURL: string):
         for n in range(pArray.__len__()):
             if pArray[n].playlist_url.__contains__(p.playlist_url):
                 alreadyWritten = True
-                print("Channel already added")
+                print("Playlist already added")
                 break
 
         if not alreadyWritten:
@@ -311,13 +311,13 @@ def removeMonitoredChannel(oldChannelURL: string):
     for n in range(channelURLs.__len__()):
         monitoredChannelsFile.write(channelURLs[n])
 
-def removePlaylist(oldPlaylistURL: string):
+def removeMonitoredPlaylist(oldPlaylistURL: string):
     monitoredPlaylistFile = open("data/monitoredPlaylist.txt", "rt")
     playlistURLs = monitoredPlaylistFile.readlines()
     monitoredPlaylistFile.close()
 
     for n in range(playlistURLs.__len__()):
-        if playlistURLs[n].__contains__(playlistURLs):
+        if playlistURLs[n].__contains__(oldPlaylistURL):
             del playlistURLs[n]
             break
 

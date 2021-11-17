@@ -1,1 +1,1 @@
-Enter all Channel-URLs here(one per line):
+Enter all Channel-URLs here(one per line): 

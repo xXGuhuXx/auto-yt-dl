@@ -23,7 +23,7 @@ def index():
 
     zipped = zip(channelNames, channelURLs)
     zipped1 = zip(playlistTitles, playlistURLs)
-    return render_template("index.html", channels=zipped, playList=zipped1)
+    return render_template("index.html", channels=zipped, playlist=zipped1)
 
 @app.route('/settings.html')
 def settings():
@@ -64,7 +64,7 @@ def addChannel():
 
         for n in range(monitoredPlaylist.__len__()):
             if request.form == ImmutableMultiDict([(str(monitoredPlaylist[n].title), 'Remove')]):
-                pytubDef.removeMonitoredChannel(str(monitoredPlaylist[n].playlist_url))
+                pytubDef.removeMonitoredPlaylist(str(monitoredPlaylist[n].playlist_url))
                 channelNames = []
                 channelURLs = []
                 monitoredPlaylist = pytubDef.returnMonitoredPlaylist()
@@ -110,7 +110,7 @@ def addChannel():
 
     zipped = zip(channelNames, channelURLs)
     zipped1 = zip(playlistTitles, playlistURLs)
-    return render_template("index.html", channels=zipped, playList=zipped1)
+    return render_template("index.html", channels=zipped, playlist=zipped1)
 
 @app.route('/settings.html', methods=["POST"])
 def updateSettings():
