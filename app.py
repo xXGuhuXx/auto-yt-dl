@@ -21,7 +21,6 @@ def index():
         playlistTitles.append(str(monitoredPlaylist[n].title))
         playlistURLs.append(str(monitoredPlaylist[n].playlist_url))
 
-
     zipped = zip(channelNames, channelURLs)
     zipped1 = zip(playlistTitles, playlistURLs)
     return render_template("index.html", channels=zipped, playList=zipped1)
@@ -30,11 +29,11 @@ def index():
 def settings():
     return render_template("settings.html", channelDir=pytubDef.returnChannelDir(), interval=pytubDef.returnInterval())
 
-@app.route('/index.html')
+@app.route('/index.html', methods=["GET", "POST"])
 def back():
     return index()
 
-@app.route('/', methods=["POST"])
+@app.route('/', methods=["GET", "POST"])
 def addChannel():
     monitoredChannels = pytubDef.returnMonitoredChannels()
     monitoredPlaylist = pytubDef.returnMonitoredPlaylist()
@@ -89,12 +88,7 @@ def addChannel():
             newURL = request.form['inputField']
             if pytubDef.newMonitoredChannel(newURL):
                 print("Success")
-            else:
-                print("URL Invalid")
-
-        if request.form["playlistInputSubmit"]:
-            newURL = request.form['playlistInputField']
-            if pytubDef.newMonitoredPlaylist(newURL):
+            elif pytubDef.newMonitoredPlaylist(newURL):
                 print("Success")
             else:
                 print("URL Invalid")
@@ -116,7 +110,7 @@ def addChannel():
 
     zipped = zip(channelNames, channelURLs)
     zipped1 = zip(playlistTitles, playlistURLs)
-    return render_template("index.html", channels=zipped)
+    return render_template("index.html", channels=zipped, playList=zipped1)
 
 @app.route('/settings.html', methods=["POST"])
 def updateSettings():

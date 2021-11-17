@@ -212,7 +212,7 @@ def returnMonitoredChannels():
         monitoredChannelsFile = open("data/monitoredChannels.txt", "rt")
     except:
         monitoredChannelsFile = open("data/monitoredChannels.txt", "x")
-        monitoredChannelsFile.mode = "rt"
+        monitoredChannelsFile.mode = "r"
 
     channelURLs = monitoredChannelsFile.readlines()
 
@@ -232,7 +232,7 @@ def returnMonitoredPlaylist():
         monitoredPlaylistFile = open("data/monitoredPlaylist.txt", "rt")
     except:
         monitoredPlaylistFile = open("data/monitoredPlaylist.txt", "x")
-        monitoredPlaylistFile.mode = "rt"
+        monitoredPlaylistFile.mode = "r"
 
     playlistURLs = monitoredPlaylistFile.readlines()
 
@@ -242,7 +242,7 @@ def returnMonitoredPlaylist():
     for n in range(playlistURLs.__len__()):
 
         if  playlistURLs[n].__contains__("https://"):
-            monitoredPlaylistArray.append(Channel(playlistURLs[n]))
+            monitoredPlaylistArray.append(Playlist(playlistURLs[n]))
 
     monitoredPlaylistArray.pop(0)
     return monitoredPlaylistArray
