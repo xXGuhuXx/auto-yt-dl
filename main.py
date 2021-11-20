@@ -6,4 +6,4 @@ print("Starting loop....")
 while True:
     print("Checking for new Videos")
     pytubDef.loop()
-    sleep(int(pytubDef.returnInterval()))
+    sleep(int(pytubDef.return_interval()))
