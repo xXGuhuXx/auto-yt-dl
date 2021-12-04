@@ -174,10 +174,16 @@ def loop():
     playlistArray = returnMonitoredPlaylist()
 
     for m in range(channelArray.__len__()):
-        checkForNewURLFromChannel(channelArray[m])
+        try:
+            checkForNewURLFromChannel(channelArray[m])
+        except:
+            print("Oops. Something went wrong while checkig for new Videos")
 
     for m in range(playlistArray.__len__()):
-        checkForNewURLFromPlaylist(playlistArray[m])
+        try:
+            checkForNewURLFromPlaylist(playlistArray[m])
+        except:
+            print("Oops. Something went wrong while checkig for new Videos")
 
 def checkForNewURLFromChannel(selectedChannel: Channel):
     foundNewVid = 0
@@ -265,7 +271,7 @@ def newMonitoredChannel(newChannelURL: string):
 
         if not alreadyWritten:
             monitoredChannelsFile = open("data/monitoredChannels.txt", "a")
-            monitoredChannelsFile.write(" \n" + newChannelURL)
+            monitoredChannelsFile.write(" \n" + c.channel_url)
             monitoredChannelsFile.close()
             writeChannelURLsToTxt(c)
             return True
@@ -290,7 +296,7 @@ def newMonitoredPlaylist(newPlaylistURL: string):
 
         if not alreadyWritten:
             monitoredPlaylistFile = open("data/monitoredPlaylist.txt", "a")
-            monitoredPlaylistFile.write(" \n" + newPlaylistURL)
+            monitoredPlaylistFile.write(" \n" + p.playlist_url)
             monitoredPlaylistFile.close()
             writePlaylistURLsToTxt(p)
             return True
