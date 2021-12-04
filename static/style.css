@@ -35,7 +35,43 @@ h1 {
 	top: 50px;
 }
 
+#playlistInputField {
+	background-color:#9EA5AD;
+	border-bottom-left-radius:28px;
+	border-top-left-radius:28px;
+	border:1px solid;
+	display:inline-block;
+	cursor:pointer;
+	width:70%;
+	color:#000000;
+	font-family:Arial;
+	font-size:17px;
+	padding:8px 31px;
+	text-decoration:none;
+	position: relative;
+	left: 5%;
+	top: 50px;
+}
+
 #inputSubmit {
+	background-color:#44c767;
+	border-bottom-right-radius:28px;
+	border-top-right-radius:28px;
+	border:0px solid #44c767;
+	display:inline-block;
+	cursor:pointer;
+	width:10%;
+	color:#000000;
+	font-family:Arial;
+	font-size:17px;
+	padding:8px 31px;
+	text-decoration:none;
+	position: relative;
+	left: 5%;
+	top: 50px;
+}
+
+#playlistInputSubmit {
 	background-color:#44c767;
 	border-bottom-right-radius:28px;
 	border-top-right-radius:28px;

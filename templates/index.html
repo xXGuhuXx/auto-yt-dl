@@ -20,6 +20,15 @@
             </form>
         </div>
     {% endfor %}
+
+    {% for playlist, playlistURL in playlist %}
+        <div class="channel">
+            <form class="remove" method="POST">
+                <div class="channelName">{{ playlist }} <span>URL: {{ playlistURL }}</span></div>
+                <input type="submit" class="channelRemove" name="{{ playlist }}" value="Remove">
+            </form>
+        </div>
+    {% endfor %}
         <div>
             <a class="settings" href="settings.html">Settings</a>
         </div>
