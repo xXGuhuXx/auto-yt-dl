@@ -27,7 +27,7 @@ def index():
 
 @app.route('/settings.html')
 def settings():
-    return render_template("settings.html", channelDir=pytubDef.returnChannelDir(), interval=pytubDef.returnInterval())
+    return render_template("settings.html", channelDir=pytubDef.returnChannelDir(), interval=pytubDef.returnInterval(), ytagent=pytubDef.returnYTAgent())
 
 @app.route('/index.html', methods=["GET", "POST"])
 def back():
@@ -119,6 +119,8 @@ def updateSettings():
             pytubDef.updateInterval(int(request.form['Interval']))
         if request.form.get("toggleChannelDir"):
             pytubDef.toggleChannelDir()
+        if request.form.get("toggleytagent"):
+            pytubDef.toggleYtAgent()
         
     return settings()
 
