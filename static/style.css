@@ -123,6 +123,41 @@ h1 {
 	top: 50px;
 }
 
+#submitytagentEnable {
+	background-color:#44c767;
+	border-radius:28px;
+	border:1px solid;
+	display:inline-block;
+	width:80%;
+	color:#000000;
+	font-family:Arial;
+	font-size:17px;
+	text-align: center;
+	padding:8px 31px;
+	text-decoration:none;
+	position: relative;
+	left: 5%;
+	top: 50px;
+}
+
+#submitytagentDisable {
+	background-color:#FF0000;
+	border-radius:28px;
+	border:1px solid;
+	display:inline-block;
+	width:80%;
+	color:#000000;
+	font-family:Arial;
+	font-size:17px;
+	text-align: center;
+	padding:8px 31px;
+	text-decoration:none;
+	position: relative;
+	left: 5%;
+	top: 50px;
+}
+
+
 .channelName {
 	background-color:#FF0000;
 	border-bottom-left-radius:28px;
