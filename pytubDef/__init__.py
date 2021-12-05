@@ -25,6 +25,16 @@ def returnChannelDir():
         createConfig()
         return returnChannelDir()
 
+def returnYTAgent():
+    try:
+        file =  "data/config.ini"
+        config = ConfigParser()
+        config.read(file)
+        return config.getboolean("Settings", "ytagent")
+    except:
+        createConfig()
+        return returnChannelDir()
+
 def updateInterval(interval: int):
     if interval>59:
         try:
@@ -55,11 +65,27 @@ def toggleChannelDir():
         createConfig()
         toggleChannelDir()
 
+def toggleYtAgent():
+    try:
+        file = "data/config.ini"
+        config = ConfigParser()
+        config.read(file)
+        if returnYTAgent():
+            config.set("Settings", "ytagent", "False")
+        else:
+            config.set("Settings", "ytagent", "True")
+        with open(file, 'w') as configfile:
+            config.write(configfile)
+    except:
+        createConfig()
+        toggleYtAgent()
+
 def createConfig():
     config_object = ConfigParser()
     config_object["Settings"] = {
         "interval": "900",
-        "channelDir": "True"
+        "channelDir": "True",
+        "ytagent": "False"
     }
     with open('data/config.ini', 'w') as conf:
         config_object.write(conf)
@@ -68,7 +94,10 @@ def downloadNewVideo(videoURL,path):
     video = YouTube(videoURL)
     print("Downloading new Video: " + str(video.title))
     try:
-        video.streams.get_highest_resolution().download(output_path=path)
+        if returnYTAgent():
+            video.streams.get_highest_resolution().download(output_path=path, filename="[" + video.video_id + "].mp4")
+        else:
+            video.streams.get_highest_resolution().download(output_path=path)
     except:
         print("Failed to download video: " + str(video.title) + ". Is it a livestream?" )
 
@@ -196,6 +225,8 @@ def checkForNewURLFromChannel(selectedChannel: Channel):
                  path="Downloads/" + str(selectedChannel.channel_name)
              else:
                  path="Downloads"
+             if returnYTAgent():
+                 path="Downloads/[" + str(selectedChannel.channel_id) + "]"
              downloadNewVideo(selectedChannel.video_urls[n],path)
              writeChannelURLtoFile(selectedChannel, selectedChannel.video_urls[n])
 
@@ -210,6 +241,8 @@ def checkForNewURLFromPlaylist(selectedPlaylist: Playlist):
                  path="Downloads/" + str(selectedPlaylist.title)
              else:
                  path="Downloads"
+             if returnYTAgent():
+                 path="Downloads/[" + str(selectedPlaylist.playlist_id) + "]"
              downloadNewVideo(selectedPlaylist.video_urls[n],path)
              writePlaylistURLtoFile(selectedPlaylist, selectedPlaylist.video_urls[n])
 

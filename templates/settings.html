@@ -20,6 +20,13 @@
                 </button>
                 {% endif %}
             </form>
+            <form class="yt-agent-Input" method="POST">
+                {% if ytagent %}
+                <button id="submitytagentDisable" type="submit" name="toggleytagent" value="toggleytagent">Disable naming for Youtube-Agent</button>
+                {% else %}
+                <button id="submitytagentEnable" type="submit" name="toggleytagent" value="toggleytagent">Enable naming for Youtube-Agent (File names will be [videoid].mp4)</button>
+                {% endif %}
+            </form>
         </div>
         <br><br><br>
          <div>
