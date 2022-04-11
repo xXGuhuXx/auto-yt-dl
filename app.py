@@ -3,7 +3,7 @@ from werkzeug.datastructures import ImmutableMultiDict
 import pytubDef
 import logging
 
-logging.basicConfig(filename='flaskDebug.log', encoding='utf-8', level=logging.DEBUG, format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p')
+logging.basicConfig(filename='data/flaskDebug.log', encoding='utf-8', level=logging.DEBUG, format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p')
 app = Flask(__name__)
 
 @app.route('/')

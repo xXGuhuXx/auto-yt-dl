@@ -2,7 +2,7 @@ from time import sleep
 import pytubDef
 import logging
 
-logging.basicConfig(filename='mainDebug.log', encoding='utf-8', level=logging.DEBUG, format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p')
+logging.basicConfig(filename='data/mainDebug.log', encoding='utf-8', level=logging.DEBUG, format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p')
 logging.info("Service started.")
 print("Starting loop....")
 while True:
