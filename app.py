@@ -1,7 +1,10 @@
 from flask import Flask, render_template, request
 from werkzeug.datastructures import ImmutableMultiDict
 import pytubDef
+import logging
 
+if pytubDef.log():
+    logging.basicConfig(filename='data/flaskDebug.log', encoding='utf-8', level=logging.DEBUG)
 app = Flask(__name__)
 
 @app.route('/')
