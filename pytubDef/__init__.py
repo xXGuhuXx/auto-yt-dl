@@ -157,11 +157,11 @@ def downloadNewVideo(videoURL, path):
         try:
             if returnYTAgent():
                 ydl_opts = {
-                    'outtmpl': path + "\\[" + "%(id)s" + "].mp4"
+                    'outtmpl': path + "/[" + "%(id)s" + "].mp4"
                 }
             else:
                 ydl_opts = {
-                    'outtmpl': path + "\\%(title)s.mp4"
+                    'outtmpl': path + "/%(title)s.mp4"
                 }
             with youtube_dl.YoutubeDL(ydl_opts) as ydl:
                 ydl.download([videoURL])
