@@ -4,5 +4,5 @@ itsdangerous==2.0.1
 Jinja2==3.0.1
 MarkupSafe==2.0.1
 Werkzeug==2.0.1
-
+youtube_dl~=2021.12.17
 pytube~=12.0.0

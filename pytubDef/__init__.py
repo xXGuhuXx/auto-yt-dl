@@ -5,6 +5,7 @@ from pytube import YouTube
 from pytube import Playlist
 from configparser import ConfigParser
 import logging
+import youtube_dl
 
 
 def log():
@@ -151,8 +152,23 @@ def downloadNewVideo(videoURL, path):
             video.streams.get_highest_resolution().download(output_path=path)
     except Exception as e:
         logging.debug(e)
-        logging.error("Failed to download: " + str(videoURL))
-        print("Failed to download video: " + str(video.title) + ". Is it a livestream?" )
+        logging.error("Failed to download: " + str(videoURL) + "with pytube")
+        logging.info("Downloading " + str(videoURL) + " with youtube_dl")
+        try:
+            if returnYTAgent():
+                ydl_opts = {
+                    'outtmpl': path + "\\[" + "%(id)s" + "].mp4"
+                }
+            else:
+                ydl_opts = {
+                    'outtmpl': path + "\\%(title)s.mp4"
+                }
+            with youtube_dl.YoutubeDL(ydl_opts) as ydl:
+                ydl.download([videoURL])
+        except:
+            print("Failed to download video: " + str(video.title) + ". Is it a livestream?")
+            return False
+    return True
 
 
 def urlAlreadyWritten(url: string, channelName: string):
@@ -311,8 +327,8 @@ def checkForNewURLFromChannel(selectedChannel: Channel):
              if returnYTAgent():
                  path="Downloads/[" + str(selectedChannel.channel_id) + "]"
              logging.info("Initiating download of " + selectedChannel.video_urls[n])
-             downloadNewVideo(selectedChannel.video_urls[n],path)
-             writeChannelURLtoFile(selectedChannel, selectedChannel.video_urls[n])
+             if downloadNewVideo(selectedChannel.video_urls[n], path):
+                writeChannelURLtoFile(selectedChannel, selectedChannel.video_urls[n])
 
 
 def checkForNewURLFromPlaylist(selectedPlaylist: Playlist):
