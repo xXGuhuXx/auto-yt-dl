@@ -18,7 +18,7 @@ After the docker is started you´ll be able to access the Web Gui on [ipOfYourMa
 Enter a Channel URL and press "Add". The Channel Name and URL should now be listed below the input field.
 To remove a Channel press "Remove"
 
-## How does it work
+## How it works
 This docker utilizes pytube. When add an Channel it will fetch all Video URLs of that Channel and save it.
 Every 15 minutes it uses the already saved URL to check if a new video is accessible.
 It not find new videos immediately, but usually it should take no longer than 30 minutes.
