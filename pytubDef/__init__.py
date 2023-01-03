@@ -27,6 +27,7 @@ def log():
         createConfig()
         return log()
 
+
 def returnInterval():
     try:
         file = "data/config.ini"
@@ -57,7 +58,7 @@ def returnChannelDir():
 
 def returnYTAgent():
     try:
-        file =  "data/config.ini"
+        file = "data/config.ini"
         config = ConfigParser()
         config.read(file)
         logging.debug("Returning ytagent from config" + str(config.getboolean("Settings", "ytagent")))
@@ -183,7 +184,7 @@ def urlAlreadyWritten(url: string, channelName: string):
             urlFile.close()
             endOfFileNotReached = False
 
-        if str(line).__contains__(str(url)):
+        if str(url) in str(line):
             endOfFileNotReached = False
             returnBool = True
             urlFile.close()
@@ -212,11 +213,14 @@ def writeChannelURLsToTxt(selectedChannel: Channel):
 
     print("Writing URL(s) to " + selectedChannel.channel_name)
     logging.info("Writing URLs of already existing videos of" + selectedChannel.channel_name + "to .txt")
-    for n in range(selectedChannel.video_urls.__len__()):
+    video_urls = selectedChannel.video_urls
+    if len(video_urls) == 0:
+        video_urls = get_urls_using_ytdl(selectedChannel.channel_url)
+    for n in range(len(video_urls)):
 
-        if not urlAlreadyWritten(selectedChannel.video_urls[n], selectedChannel.channel_name):
+        if not urlAlreadyWritten(video_urls[n], selectedChannel.channel_name):
             urlFile = open("data/" + replaceIllegalCharacters(selectedChannel.channel_name) + ".txt", "a")
-            urlFile.writelines(" \n" + str(selectedChannel.video_urls[n]))
+            urlFile.writelines(" \n" + str(video_urls[n]))
             urlFile.close()
 
 
@@ -235,11 +239,14 @@ def writePlaylistURLsToTxt(selectedPlaylist: Playlist):
 
     print("Writing URL(s) to " + selectedPlaylist.title)
     logging.info("Writing URLs of already existing videos of" + selectedPlaylist.title + "to .txt")
-    for n in range(selectedPlaylist.video_urls.__len__()):
+    video_urls = selectedPlaylist.video_urls
+    if len(video_urls) == 0:
+        video_urls = get_urls_using_ytdl(selectedPlaylist.playlist_url)
+    for n in range(len(video_urls)):
 
-        if not urlAlreadyWritten(selectedPlaylist.video_urls[n], selectedPlaylist.title):
+        if not urlAlreadyWritten(video_urls[n], selectedPlaylist.title):
             urlFile = open("data/" + replaceIllegalCharacters(selectedPlaylist.title) + ".txt", "a")
-            urlFile.writelines(" \n" + str(selectedPlaylist.video_urls[n]))
+            urlFile.writelines(" \n" + str(video_urls[n]))
             urlFile.close()
 
 
@@ -295,15 +302,16 @@ def loop():
     channelArray = returnMonitoredChannels()
     playlistArray = returnMonitoredPlaylist()
 
-    for m in range(channelArray.__len__()):
+    for m in range(len(channelArray)):
         try:
             checkForNewURLFromChannel(channelArray[m])
         except Exception as e:
             logging.debug(e)
             logging.error("Something went wrong while checkig for new Videos from " + channelArray[m].channel_name)
+            print(e)
             print("Oops. Something went wrong while checkig for new Videos")
 
-    for m in range(playlistArray.__len__()):
+    for m in range(len(playlistArray)):
         try:
             checkForNewURLFromPlaylist(playlistArray[m])
         except Exception as e:
@@ -312,42 +320,65 @@ def loop():
             print("Oops. Something went wrong while checkig for new Videos")
 
 
+def get_urls_using_ytdl(url):
+    ydl = youtube_dl.YoutubeDL({'outtmpl': '%(id)s.%(ext)s'})
+
+    with ydl:
+        result = ydl.extract_info(
+            url,
+            download=False  # We just want to extract the info
+        )
+    videos = []
+    for n in range(0, len(result["entries"])):
+        try:
+            for vid in result['entries'][n]['entries']:
+                videos.append("https://www.youtube.com/watch?v=" + vid["id"])
+        except:
+            print("")
+    return videos
+
+
 def checkForNewURLFromChannel(selectedChannel: Channel):
     foundNewVid = 0
+    print("Searching for new videos of " + selectedChannel.channel_name)
     logging.info("Searching for new videos of " + selectedChannel.channel_name)
-    for n in range(selectedChannel.video_urls.__len__()):
-        if not urlAlreadyWritten(selectedChannel.video_urls[n], selectedChannel.channel_name):
-             logging.info("Found new video of" + selectedChannel.channel_name + ": " + selectedChannel.video_urls[n])
-             print("Found and downloading a new URL from " + selectedChannel.channel_name)
-             foundNewVid = foundNewVid + 1
-             if returnChannelDir():
-                 path="Downloads/" + replaceIllegalCharacters(str(selectedChannel.channel_name))
-             else:
-                 path="Downloads"
-             if returnYTAgent():
-                 path="Downloads/[" + str(selectedChannel.channel_id) + "]"
-             logging.info("Initiating download of " + selectedChannel.video_urls[n])
-             if downloadNewVideo(selectedChannel.video_urls[n], path):
-                writeChannelURLtoFile(selectedChannel, selectedChannel.video_urls[n])
+    video_urls = selectedChannel.video_urls
+    if len(video_urls) == 0:
+        video_urls = get_urls_using_ytdl(selectedChannel.channel_url)
+    for n in range(len(video_urls)):
+        if not urlAlreadyWritten(video_urls[n], selectedChannel.channel_name):
+            foundNewVid += 1
+            if downloadNewVideo(video_urls[n],
+                                new_video(video_urls[n], selectedChannel.channel_name, selectedChannel.channel_id)):
+                writeChannelURLtoFile(selectedChannel, video_urls[n])
+
+
+def new_video(url, name, ident):
+    logging.info("Found new video of" + name + ": " + url)
+    print("Found and downloading a new URL from " + name)
+    if returnChannelDir():
+        path = "Downloads/" + replaceIllegalCharacters(str(name))
+    else:
+        path = "Downloads"
+    if returnYTAgent():
+        path = "Downloads/[" + str(ident) + "]"
+    logging.info("Initiating download of " + url)
+    return path
 
 
 def checkForNewURLFromPlaylist(selectedPlaylist: Playlist):
     foundNewVid = 0
     logging.info("Searching for new videos from the playlist " + selectedPlaylist.title)
-    for n in range(selectedPlaylist.video_urls.__len__()):
-        if not urlAlreadyWritten(selectedPlaylist.video_urls[n], selectedPlaylist.title):
-             logging.info("Found new video from the playlist: " + selectedPlaylist.title + ": Link:" + selectedPlaylist.video_urls[n])
-             print("Found and downloading a new URL from " + selectedPlaylist.title)
-             foundNewVid = foundNewVid + 1
-             if returnChannelDir():
-                 path="Downloads/" + replaceIllegalCharacters(str(selectedPlaylist.title))
-             else:
-                 path="Downloads"
-             if returnYTAgent():
-                 path="Downloads/[" + str(selectedPlaylist.playlist_id) + "]"
-             logging.info("Initiating download of " + selectedPlaylist.video_urls[n])
-             downloadNewVideo(selectedPlaylist.video_urls[n],path)
-             writePlaylistURLtoFile(selectedPlaylist, selectedPlaylist.video_urls[n])
+    video_urls = selectedPlaylist.video_urls
+    if len(video_urls) == 0:
+        video_urls = get_urls_using_ytdl(selectedPlaylist.playlist_url)
+    for n in range(len(video_urls)):
+        if not urlAlreadyWritten(video_urls[n], selectedPlaylist.title):
+
+            logging.info("Found new video from the playlist: " + selectedPlaylist.title + ": Link:" +
+                         video_urls[n])
+            downloadNewVideo(video_urls[n], new_video(video_urls[n], selectedPlaylist.title, selectedPlaylist.playlist_id))
+            writePlaylistURLtoFile(selectedPlaylist, video_urls[n])
 
 
 def returnMonitoredChannels():
@@ -366,11 +397,11 @@ def returnMonitoredChannels():
     monitoredChannelsArray = [Channel]
 
     logstr = ""
-    for n in range(channelURLs.__len__()):
+    for n in range(len(channelURLs)):
 
-        if channelURLs[n].__contains__("https://"):
+        if "https://" in channelURLs[n]:
             monitoredChannelsArray.append(Channel(channelURLs[n]))
-            logstr = logstr + monitoredChannelsArray[monitoredChannelsArray.__len__()-1].channel_name
+            logstr = logstr + monitoredChannelsArray[len(monitoredChannelsArray) - 1].channel_name
 
     monitoredChannelsArray.pop(0)
     logging.info("Currently monitored channels: " + logstr)
@@ -392,11 +423,11 @@ def returnMonitoredPlaylist():
     monitoredPlaylistFile.close()
     monitoredPlaylistArray = [Playlist]
     logstr = ""
-    for n in range(playlistURLs.__len__()):
+    for n in range(len(playlistURLs)):
 
-        if  playlistURLs[n].__contains__("https://"):
+        if "https://" in playlistURLs[n]:
             monitoredPlaylistArray.append(Playlist(playlistURLs[n]))
-            logstr = logstr + monitoredPlaylistArray[monitoredPlaylistArray.__len__() - 1].title
+            logstr = logstr + monitoredPlaylistArray[len(monitoredPlaylistArray) - 1].title
 
     monitoredPlaylistArray.pop(0)
     logging.info("Currently monitored playlists: " + logstr)
@@ -420,8 +451,8 @@ def newMonitoredChannel(newChannelURL: string):
     else:
         cArray = returnMonitoredChannels()
 
-        for n in range(cArray.__len__()):
-            if cArray[n].channel_name.__contains__(c.channel_name):
+        for n in range(len(cArray)):
+            if c.channel_name in cArray[n].channel_name:
                 alreadyWritten = True
                 logging.info("Channel already monitored: " + cArray[n].channel_name)
                 print("Channel already added")
@@ -455,8 +486,8 @@ def newMonitoredPlaylist(newPlaylistURL: string):
     else:
         pArray = returnMonitoredPlaylist()
 
-        for n in range(pArray.__len__()):
-            if pArray[n].playlist_url.__contains__(p.playlist_url):
+        for n in range(len(pArray)):
+            if p.playlist_url in pArray[n].playlist_url:
                 alreadyWritten = True
                 logging.info("Channel already monitored: " + pArray[n].title)
                 print("Playlist already added")
@@ -479,14 +510,15 @@ def removeMonitoredChannel(oldChannelURL: string):
     channelURLs = monitoredChannelsFile.readlines()
     monitoredChannelsFile.close()
 
-    for n in range(channelURLs.__len__()):
-        if channelURLs[n].__contains__(oldChannelURL):
+    for n in range(len(channelURLs)):
+        if oldChannelURL in channelURLs[n]:
             del channelURLs[n]
             break
 
     monitoredChannelsFile = open("data/monitoredChannels.txt", "w")
-    for n in range(channelURLs.__len__()):
+    for n in range(len(channelURLs)):
         monitoredChannelsFile.write(channelURLs[n])
+
 
 def removeMonitoredPlaylist(oldPlaylistURL: string):
     logging.info("Removing " + oldPlaylistURL + "from monitored playlists")
@@ -494,11 +526,11 @@ def removeMonitoredPlaylist(oldPlaylistURL: string):
     playlistURLs = monitoredPlaylistFile.readlines()
     monitoredPlaylistFile.close()
 
-    for n in range(playlistURLs.__len__()):
-        if playlistURLs[n].__contains__(oldPlaylistURL):
+    for n in range(len(playlistURLs)):
+        if oldPlaylistURL in playlistURLs[n]:
             del playlistURLs[n]
             break
 
     monitoredPlaylistFile = open("data/monitoredPlaylist.txt", "w")
-    for n in range(playlistURLs.__len__()):
+    for n in range(len(playlistURLs)):
         monitoredPlaylistFile.write(playlistURLs[n])
