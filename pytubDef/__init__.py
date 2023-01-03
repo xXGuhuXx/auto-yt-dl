@@ -147,7 +147,6 @@ def downloadNewVideo(videoURL, path):
     print("Downloading new Video: " + str(video.title))
     try:
         if returnYTAgent():
-            logging.info()
             video.streams.get_highest_resolution().download(output_path=path, filename="[" + video.video_id + "].mp4")
         else:
             video.streams.get_highest_resolution().download(output_path=path)
